@@ -16,6 +16,7 @@ function addFunctionSelectEventListener(functions) {
     const selectedFunction = functions[section.id];
 
     renderFunctionRunner(selectedFunction);
+    renderFunctionResult('');
 
     removeFunctionRunnerEventListener(functionRunnerEventListener);
     functionRunnerEventListener = addFunctionRunnerEventListener(selectedFunction);
@@ -51,6 +52,7 @@ function functionCard(fun) {
   `;
 }
 
+
 function renderFunctionRunner(fun) {
   const el = document.querySelector('#function-runner__args');
   let html = '<ol>';
@@ -74,8 +76,7 @@ function addFunctionRunnerEventListener(fun) {
       .map(input => input.value);
 
     const result = fun(...args);
-
-    console.log(result);
+    renderFunctionResult(result);
   }
 
   const el = document.querySelector('#function-runner');
@@ -88,6 +89,12 @@ function addFunctionRunnerEventListener(fun) {
 function removeFunctionRunnerEventListener(listener){
   const el = document.querySelector('#function-runner');
   el.removeEventListener('click', listener);
+}
+
+
+function renderFunctionResult(result) {
+  const el = document.querySelector('#function-runner__result');
+  el.innerHTML = result;
 }
 
 
