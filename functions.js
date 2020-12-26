@@ -1,41 +1,49 @@
-export function hello(arg) {
-  return "Hello, " + arg;
+/*
+ * Instructions: 
+ *   For each function
+ *   1. Carefully read the function's requirement
+ *   2. Write javascript within the body of the function to fulfil the requirement
+ *   3. Use the app's user interface to test your code
+ */
+
+
+// Return a greeting to the person named in the function's argument
+// Example result: "Hello, Joan!"
+export function greet(name) {
+
 }
 
-export function add(a, b) { return a + b; }
 
+// Return the result of adding a and b
+// Example result: 4
+export function add(a, b) { 
+
+}
+
+
+// Return the text in upper case and followed by three exclamation points
+// Example result: "HEY, Y'ALL, THIS BUFFET'S GOT CRAB LEGS!!!""
 export const yell = (text) => {
-  return `${text}!!!!`.toUpperCase();
-}
-
-export function sayThreeWords(one, two, three) {
-  return [one, two, three].join(" ");
-}
-
-export function bye() {
-  return 'bye';
-}
-
-export function someHtml(text) {
-  return '<h2 style="color:red">' + text + '</h2>';
-}
-
-export function f() {
 
 }
 
-export function g() {
+
+// Return a string that repeats the message the number of times specified in numTimes
+// Example result: "HelloHelloHello"
+export function repeat(message, numTimes) {
 
 }
 
-export function h() {
+
+// Same as the repeat function above, except each repetition should be separated by sepString
+// Example result: "Yo, Yo, Yo"
+export function repeatSep(message, numTimes, sepString) {
 
 }
 
-export function i() {
 
-}
-
-export function j() {
+// Return an array containing each of the parameters
+// Example result ["foo", "bar", "baz"]
+export function toArray(first, second, third) {
 
 }
