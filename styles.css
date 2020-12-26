@@ -1,0 +1,12 @@
+.content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+article {
+    border: 1px solid gray;
+    margin: 8px;
+    padding: 16px;
+    display: inline-block;
+}
