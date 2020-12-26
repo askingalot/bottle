@@ -66,7 +66,7 @@ function renderFunctionRunner(fun) {
   let html = `<h2>Function <code>${fun.name}()</code> accepts no arguments</h2>`;
 
   if (fun.length) {
-    html = `<h2>Please enter argument(s) for <code>${fun.name}()</code>:</h2>`;
+    html = `<h2>Please enter the argument${fun.length === 1 ? '' : 's'} for <code>${fun.name}()</code>:</h2>`;
 
     html += '<ol>';
     for (let i = 0; i < fun.length; i++) {
