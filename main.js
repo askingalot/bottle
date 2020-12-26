@@ -1,7 +1,7 @@
 import * as functions from './functions.js';
 
 function main() {
-  renderFunctions(functions);
+  renderFunctionList(functions);
   addFunctionSelectEventListener(functions);
 }
 
@@ -13,12 +13,12 @@ function addFunctionSelectEventListener(functions) {
       return;
     }
     const selectedFunction = functions[section.id];
-    console.log(selectedFunction());
+    renderFunctionRunner(selectedFunction);
   });
 }
 
 
-function renderFunctions(functions) {
+function renderFunctionList(functions) {
   const el = document.querySelector('#function-list');
   el.innerHTML =
     Object.values(functions)
@@ -34,7 +34,7 @@ function functionComponent(fun) {
         ${fun.name}()
       </div>
       <div class="function-card__args">
-        Takes ${fun.length} args
+        Takes ${fun.length} ${fun.length === 1 ? 'arg' : 'args'}
       </div>
       <div class="function-card__body">
         <code>
@@ -45,9 +45,19 @@ function functionComponent(fun) {
   `;
 }
 
+function renderFunctionRunner(fun) {
+  const el = document.querySelector('#function-runner__args');
+  let html = '<ol>';
+  for (let i=0; i<fun.length; i++) {
+    html += `<li><input id="${i}" class="arg" /></li>`
+  }
+  html += '</ol>';
+  el.innerHTML = html;
+}
+
 
 function getNearestAncestorByTag(el, tagname) {
-  if (!el) {
+  if (!el?.tagName) {
     return null;
   }
   if (el.tagName.toUpperCase() === tagname.toUpperCase()) {
