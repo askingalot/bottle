@@ -17,7 +17,7 @@ function addFunctionSelectEventListener(functions) {
 
     renderFunctionDisplay(selectedFunction);
     renderFunctionRunner(selectedFunction);
-    renderFunctionResult('');
+    clearFunctionResult();
 
     removeFunctionRunnerEventListener(functionRunnerEventListener);
     functionRunnerEventListener = addFunctionRunnerEventListener(selectedFunction);
@@ -56,7 +56,6 @@ ${fun.toString()}
     </pre>
   `;
 }
-
 
 function renderFunctionRunner(fun) {
   const el = document.querySelector('#function-runner__args');
@@ -103,7 +102,13 @@ function removeFunctionRunnerEventListener(listener) {
 
 function renderFunctionResult(result) {
   const el = document.querySelector('#function-runner__result');
-  el.innerHTML = result;
+  el.innerHTML = JSON.stringify(result);
+}
+
+
+function clearFunctionResult() {
+  const el = document.querySelector('#function-runner__result');
+  el.innerHTML = "";
 }
 
 
