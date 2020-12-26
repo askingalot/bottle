@@ -16,6 +16,10 @@ export function bye() {
   return 'bye';
 }
 
+export function someHtml(text) {
+  return '<h2 style="color:red">' + text + '</h2>';
+}
+
 export function f() {
 
 }

@@ -38,12 +38,22 @@ article {
 
 .function-card {
     margin-top: 4px;
-    padding: 4px;
+    padding: 8px;
 }
-
 .function-card:hover {
     background-color: #eee;
     cursor: pointer;
+}
+
+.function-card__name {
+    font-size: 1.3em;
+}
+.function-card__name:hover {
+    font-weight: bold;
+}
+
+.function-card__body {
+    display: none;
 }
 
 #function-runner__result {

@@ -36,13 +36,11 @@ function renderFunctionList(functions) {
 
 
 function functionCard(fun) {
+  const argList = range(1, fun.length + 1).map(i => `arg${i}`).join(', ');
   return `
     <section id="${fun.name}" class="function-card">
       <div class="function-card__name">
-        ${fun.name}()
-      </div>
-      <div class="function-card__args">
-        Takes ${fun.length} ${fun.length === 1 ? 'arg' : 'args'}
+        ${fun.name}(${argList})
       </div>
       <div class="function-card__body">
         <code>
@@ -110,4 +108,12 @@ function getNearestAncestorByTag(el, tagname) {
     return el;
   }
   return getNearestAncestorByTag(el.parentNode, tagname);
+}
+
+function range(start, end) {
+  if (end === undefined) {
+    end = start;
+    start = 0;
+  }
+  return [...new Array(end - start)].map((_, i) => i + start);
 }
