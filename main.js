@@ -25,7 +25,7 @@ function addFunctionSelectEventListener(functions) {
 
 
 function renderFunctionList(functions) {
-  const el = document.querySelector('#function-list');
+  const el = document.querySelector('#function-list__body');
   el.innerHTML =
     Object.values(functions)
       .filter(prop => typeof prop === 'function')
@@ -55,12 +55,15 @@ function functionCard(fun) {
 
 function renderFunctionRunner(fun) {
   const el = document.querySelector('#function-runner__args');
-  let html = '<ol>';
-  for (let i=0; i<fun.length; i++) {
-    html += `<li><input id="${i}" class="arg" /></li>`
+  let html = `<h2>Function <code>${fun.name}()</code> accepts no arguments</h2>`;
+  if (fun.length) {
+    html = `<h2>Please enter argument(s) for <code>${fun.name}()</code>:</h2><ol>`;
+    for (let i = 0; i < fun.length; i++) {
+      html += `<li><input id="${i}" class="arg" /></li>`
+    }
+    html += '</ol>';
   }
-  html += '</ol>';
-  html += '<button id="run">Execute</button>';
+  html += `<button id="run">Execute ${fun.name}()</button>`;
   el.innerHTML = html;
 }
 
@@ -86,7 +89,7 @@ function addFunctionRunnerEventListener(fun) {
 }
 
 
-function removeFunctionRunnerEventListener(listener){
+function removeFunctionRunnerEventListener(listener) {
   const el = document.querySelector('#function-runner');
   el.removeEventListener('click', listener);
 }

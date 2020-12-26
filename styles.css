@@ -1,14 +1,39 @@
-.content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+h1 {
+    text-align: center;
+    border-bottom: 1px solid lightgray;
+    background-color: whitesmoke;
+    width: 100%;
+    height: 48px;
+    padding-top: 16px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+}
+
+body {
+    background-color: lightslategray;
 }
 
 article {
+    background-color: white;
     border: 1px solid gray;
-    margin: 8px;
-    padding: 16px;
+    padding: 72px 16px 16px 16px;
     display: inline-block;
+    width: 46%;
+    min-width: 300px;
+    bottom: 16px;
+    top: 80px;
+    position: absolute;
+    overflow-y: auto;
+}
+
+#function-list {
+    left: 16px;
+}
+
+#function-runner {
+    right: 16px;
 }
 
 .function-card {

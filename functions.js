@@ -15,3 +15,23 @@ export function sayThreeWords(one, two, three) {
 export function bye() {
   return 'bye';
 }
+
+export function f() {
+
+}
+
+export function g() {
+
+}
+
+export function h() {
+
+}
+
+export function i() {
+
+}
+
+export function j() {
+
+}
