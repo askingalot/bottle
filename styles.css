@@ -39,11 +39,11 @@ article {
 
 .left-side {
     left: 16px;
-    right: 50.5%;
+    right: calc(50% + 8px);
 }
 
 .right-side {
-    left: 50.5%;
+    left: calc(50% + 8px);
     right: 16px;
 }
 
