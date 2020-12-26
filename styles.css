@@ -63,10 +63,6 @@ article {
     font-weight: bold;
 }
 
-.function-card__body {
-    display: none;
-}
-
 #function-runner__args li {
     margin-top: 8px;
 }

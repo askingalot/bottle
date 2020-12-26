@@ -42,11 +42,6 @@ function functionCard(fun) {
       <div class="function-card__name">
         ${fun.name}${extractParamList(fun)}
       </div>
-      <div class="function-card__body">
-        <code>
-          ${fun.toString()}
-        </code>
-      </div>
     </section>
   `;
 }
