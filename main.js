@@ -58,7 +58,7 @@ function renderFunctionRunner(fun) {
   if (fun.length) {
     html = `<h2>Please enter argument(s) for <code>${fun.name}()</code>:</h2><ol>`;
     for (let i = 0; i < fun.length; i++) {
-      html += `<li><input id="${i}" class="arg" /></li>`
+      html += `<li><textarea id="${i}" class="arg"></textarea></li>`
     }
     html += '</ol>';
   }
@@ -75,7 +75,8 @@ function addFunctionRunnerEventListener(fun) {
 
     const args = Array.from(document.querySelectorAll('.arg'))
       .sort((inputA, inputB) => parseInt(inputA.id) - parseInt(inputB.id))
-      .map(input => input.value);
+      .map(input => input.value)
+      .map(parseArg);
 
     const result = fun(...args);
     renderFunctionResult(result);
@@ -110,10 +111,21 @@ function getNearestAncestorByTag(el, tagname) {
   return getNearestAncestorByTag(el.parentNode, tagname);
 }
 
+
 function range(start, end) {
   if (end === undefined) {
     end = start;
     start = 0;
   }
   return [...new Array(end - start)].map((_, i) => i + start);
+}
+
+
+function parseArg(stringArg) {
+  try {
+    return JSON.parse(stringArg);
+  } catch (error) {
+    console.warn(`Failed tp parse "${stringArg}" as JSON. Treating value as string.`, error)
+    return stringArg;
+  }
 }

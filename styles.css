@@ -56,6 +56,14 @@ article {
     display: none;
 }
 
+#function-runner__args li {
+    margin-top: 8px;
+}
+
+#function-runner__args textarea {
+    font-size: 1.3em;
+}
+
 #function-runner__result {
     border-top: 1px solid gray;
     margin-top: 8px;
