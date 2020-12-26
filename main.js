@@ -4,27 +4,6 @@ renderFunctionList(functions);
 addFunctionSelectEventListener(functions);
 
 
-function addFunctionSelectEventListener(functions) {
-  let functionRunnerEventListener = null;
-
-  const el = document.querySelector('#function-list');
-  el.addEventListener('click', evt => {
-    const section = getNearestAncestorByTag(evt.target, 'section');
-    if (!section) {
-      return;
-    }
-    const selectedFunction = functions[section.id];
-
-    renderFunctionDisplay(selectedFunction);
-    renderFunctionRunner(selectedFunction);
-    clearFunctionResult();
-
-    removeFunctionRunnerEventListener(functionRunnerEventListener);
-    functionRunnerEventListener = addFunctionRunnerEventListener(selectedFunction);
-  });
-}
-
-
 function renderFunctionList(functions) {
   const el = document.querySelector('#function-list__body');
   el.innerHTML =
@@ -46,6 +25,29 @@ function functionCard(fun) {
   `;
 }
 
+
+function addFunctionSelectEventListener(functions) {
+  let functionRunnerEventListener = null;
+
+  const el = document.querySelector('#function-list');
+  el.addEventListener('click', evt => {
+    const section = getNearestAncestorByTag(evt.target, 'section');
+    if (!section) {
+      return;
+    }
+
+    const selectedFunction = functions[section.id];
+
+    renderFunctionDisplay(selectedFunction);
+    renderFunctionRunner(selectedFunction);
+    clearFunctionResult();
+
+    removeFunctionRunnerEventListener(functionRunnerEventListener);
+    functionRunnerEventListener = addFunctionRunnerEventListener(selectedFunction);
+  });
+}
+
+
 function renderFunctionDisplay(fun) {
   const el = document.querySelector('#function-display');
   el.innerHTML = `
@@ -57,21 +59,27 @@ ${fun.toString()}
   `;
 }
 
+
 function renderFunctionRunner(fun) {
   const el = document.querySelector('#function-runner__args');
+
   let html = `<h2>Function <code>${fun.name}()</code> accepts no arguments</h2>`;
+
   if (fun.length) {
-    html = `<h2>Please enter argument(s) for <code>${fun.name}()</code>:</h2><ol>`;
+    html = `<h2>Please enter argument(s) for <code>${fun.name}()</code>:</h2>`;
+
+    html += '<ol>';
     for (let i = 0; i < fun.length; i++) {
       html += `<li><textarea id="${i}" class="arg"></textarea></li>`
     }
     html += '</ol>';
   }
+
   html += `<button id="run">Execute ${fun.name}()</button>`;
   el.innerHTML = html;
-  
+
   const firstInput = document.querySelector('.arg');
-  firstInput.focus();
+  firstInput?.focus();
 }
 
 
@@ -105,7 +113,9 @@ function removeFunctionRunnerEventListener(listener) {
 
 function renderFunctionResult(result) {
   const el = document.querySelector('#function-runner__result');
-  el.innerHTML = JSON.stringify(result);
+  el.innerHTML = typeof result !== 'string' 
+    ? JSON.stringify(result)
+    : result;
 }
 
 
@@ -119,18 +129,22 @@ function getNearestAncestorByTag(el, tagname) {
   if (!el?.tagName) {
     return null;
   }
+
   if (el.tagName.toUpperCase() === tagname.toUpperCase()) {
     return el;
   }
+
   return getNearestAncestorByTag(el.parentNode, tagname);
 }
 
 
 function extractParamList(fun) {
   const funString = fun.toString();
+
   const openParenPos = funString.indexOf('(');
   const closeParenPos = funString.indexOf(')');
-  return funString.substring(openParenPos, closeParenPos+1);
+
+  return funString.substring(openParenPos, closeParenPos + 1);
 }
 
 

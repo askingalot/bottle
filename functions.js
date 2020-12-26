@@ -6,6 +6,12 @@
  *   3. Use the app's user interface to test your code
  */
 
+// Return an HTML <H3> tag displays "JavaScript doesn't love me."
+// Example result: "<H3>JavaScript doesn't love me</H3>"
+export function howDoesJavaScriptFeel() {
+
+}
+
 
 // Return a greeting to the person named in the function's argument
 // Example result: "Hello, Joan!"
