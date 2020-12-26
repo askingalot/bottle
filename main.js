@@ -29,6 +29,7 @@ function renderFunctionList(functions) {
   el.innerHTML =
     Object.values(functions)
       .filter(prop => typeof prop === 'function')
+      .sort((funA, funB) => funA.name < funB.name ? -1 : 1)
       .map(functionCard)
       .join('');
 }
