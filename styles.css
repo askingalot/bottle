@@ -18,21 +18,32 @@ body {
 article {
     background-color: white;
     border: 1px solid gray;
-    padding: 72px 16px 16px 16px;
+    padding: 16px 16px 16px 16px;
     display: inline-block;
-    width: 46%;
+    /* width: 46%; */
     min-width: 300px;
-    bottom: 16px;
-    top: 80px;
     position: absolute;
     overflow-y: auto;
 }
 
-#function-list {
-    left: 16px;
+.top-half {
+    padding-top: 72px;
+    bottom: 40%;
+    top: 80px;
 }
 
-#function-runner {
+.bottom-half {
+    top: calc(60% + 16px);
+    bottom: 16px;
+}
+
+.left-side {
+    left: 16px;
+    right: 50.5%;
+}
+
+.right-side {
+    left: 50.5%;
     right: 16px;
 }
 
@@ -62,11 +73,4 @@ article {
 
 #function-runner__args textarea {
     font-size: 1.3em;
-}
-
-#function-runner__result {
-    border-top: 1px solid gray;
-    margin-top: 8px;
-    padding-top: 8px;
-    min-height: 50px;;
 }

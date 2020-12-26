@@ -15,6 +15,7 @@ function addFunctionSelectEventListener(functions) {
     }
     const selectedFunction = functions[section.id];
 
+    renderFunctionDisplay(selectedFunction);
     renderFunctionRunner(selectedFunction);
     renderFunctionResult('');
 
@@ -47,6 +48,17 @@ function functionCard(fun) {
         </code>
       </div>
     </section>
+  `;
+}
+
+function renderFunctionDisplay(fun) {
+  const el = document.querySelector('#function-display');
+  el.innerHTML = `
+    <h2>${fun.name}</h2>
+    <hr/>
+    <pre>
+${fun.toString()}
+    </pre>
   `;
 }
 
