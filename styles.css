@@ -10,3 +10,13 @@ article {
     padding: 16px;
     display: inline-block;
 }
+
+.function-card {
+    margin-top: 4px;
+    padding: 4px;
+}
+
+.function-card:hover {
+    background-color: #eee;
+    cursor: pointer;
+}

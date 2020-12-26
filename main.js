@@ -2,7 +2,21 @@ import * as functions from './functions.js';
 
 function main() {
   renderFunctions(functions);
+  addFunctionSelectEventListener(functions);
 }
+
+function addFunctionSelectEventListener(functions) {
+  const el = document.querySelector('#function-list');
+  el.addEventListener('click', evt => {
+    const section = getNearestAncestorByTag(evt.target, 'section');
+    if (!section) {
+      return;
+    }
+    const selectedFunction = functions[section.id];
+    console.log(selectedFunction());
+  });
+}
+
 
 function renderFunctions(functions) {
   const el = document.querySelector('#function-list');
@@ -29,6 +43,17 @@ function functionComponent(fun) {
       </div>
     </section>
   `;
+}
+
+
+function getNearestAncestorByTag(el, tagname) {
+  if (!el) {
+    return null;
+  }
+  if (el.tagName.toUpperCase() === tagname.toUpperCase()) {
+    return el;
+  }
+  return getNearestAncestorByTag(el.parentNode, tagname);
 }
 
 main();
