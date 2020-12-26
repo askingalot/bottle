@@ -69,6 +69,9 @@ function renderFunctionRunner(fun) {
   }
   html += `<button id="run">Execute ${fun.name}()</button>`;
   el.innerHTML = html;
+  
+  const firstInput = document.querySelector('.arg');
+  firstInput.focus();
 }
 
 
