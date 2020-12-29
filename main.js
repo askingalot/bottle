@@ -1,5 +1,3 @@
-//import * as functions from './functions/functions.js';
-
 dynamicallyImportFunctions()
   .then(functions => {
     renderFunctionList(functions);
