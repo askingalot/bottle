@@ -54,7 +54,7 @@ function renderFunctionDisplay(fun) {
     <h2>${fun.name}</h2>
     <hr/>
     <pre>
-${fun.toString()}
+${fun.toString().replaceAll('<', '&lt;').replaceAll('>', '&gt;')}
     </pre>
   `;
 }
