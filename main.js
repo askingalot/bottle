@@ -1,14 +1,50 @@
-import * as functions from './functions.js';
+//import * as functions from './functions/functions.js';
 
-renderFunctionList(functions);
-addFunctionSelectEventListener(functions);
+dynamicallyImportFunctions()
+  .then(functions => {
+    renderFunctionList(functions);
+    addFunctionSelectEventListener(functions);
+  });
+
+
+async function dynamicallyImportFunctions() {
+  // This whole thing relies on parsing the directory listing provided by `serve`
+  // It assumes all the function modules are in a directory called 'functions'
+  //  Do NOT put an  index.html' file in the 'functions' directory
+  //  If you do 'serve' will not serve up it's custom directory listing page.
+
+  const resp = await fetch('./functions');
+  const funIndexText = await resp.text();
+
+  // The directory listing provided by `serve` creates links to each file in the files
+  //  They look something like this: 
+  //   <a href="/functions/file.js" class="file js" title="file.js">file.js</a>
+  //  Here we use the 'title' attribute to get the filename
+  const jsPaths = 
+    [...funIndexText.matchAll(/title="([^.]+)\.js"/g)]
+    .map(match => `./functions/${match[1]}.js`);
+
+  // Here we dynamically import each of the js modules found above 
+  //  and merge them into a single object
+  const modules = await Promise.all(jsPaths.map(path => import(path)));
+  const combined = modules.reduce((acc, mod) => ({ ...acc, ...mod }), {});
+
+  // Remove anything that isn't a function
+  const functions = Object.entries(combined)
+    .filter(([key, val]) => typeof val === 'function')
+    .reduce((funs, [key, val]) => {
+      funs[key] = val;
+      return funs;
+    }, {});
+
+  return functions;
+}
 
 
 function renderFunctionList(functions) {
   const el = document.querySelector('#function-list__body');
   el.innerHTML =
     Object.values(functions)
-      .filter(prop => typeof prop === 'function')
       .sort((funA, funB) => funA.name < funB.name ? -1 : 1)
       .map(functionCard)
       .join('');
@@ -116,7 +152,7 @@ function removeFunctionRunnerEventListener(listener) {
 
 function renderFunctionResult(result) {
   const el = document.querySelector('#function-runner__result');
-  el.innerHTML = typeof result !== 'string' 
+  el.innerHTML = typeof result !== 'string'
     ? JSON.stringify(result)
     : result;
 }
