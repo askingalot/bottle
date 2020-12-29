@@ -49,12 +49,15 @@ function addFunctionSelectEventListener(functions) {
 
 
 function renderFunctionDisplay(fun) {
+  console.log(window.Prism);
   const el = document.querySelector('#function-display');
   el.innerHTML = `
     <h2>${fun.name}</h2>
     <hr/>
     <pre>
-${fun.toString().replaceAll('<', '&lt;').replaceAll('>', '&gt;')}
+      <code>
+${window.Prism.highlight(fun.toString(), window.Prism.languages.javascript, 'javascript')}
+      </code>
     </pre>
   `;
 }

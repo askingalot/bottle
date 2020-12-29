@@ -16,21 +16,21 @@ export function howDoesJavaScriptFeel() {
 // Return a greeting to the person named in the function's argument
 // Example result: "Hello, Joan!"
 export function greet(name) {
-  return `<strong>Hello ${name}</strong>`;
+
 }
 
 
 // Return the result of adding a and b
 // Example result: 4
 export function add(a, b) { 
-  return a + b;
+
 }
 
 
 // Return the text in upper case and followed by three exclamation points
 // Example result: "HEY, Y'ALL, THIS BUFFET'S GOT CRAB LEGS!!!""
 export const yell = (text) => {
-  return text.toUpperCase() + '!!!';
+
 }
 
 
