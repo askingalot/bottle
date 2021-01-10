@@ -7,22 +7,8 @@ getAvailableModules()
 
 
 async function getAvailableModules() {
-  // This whole thing relies on parsing the directory listing provided by `serve`
-  // It assumes all the function modules are in a directory called 'functions'
-  //  Do NOT put an  index.html' file in the 'functions' directory
-  //  If you do 'serve' will not serve up it's custom directory listing page.
-  const resp = await fetch('./functions');
-  const funIndexText = await resp.text();
-
-  // The directory listing provided by `serve` creates links to each file in the files
-  //  They look something like this: 
-  //   <a href="/functions/file.js" class="file js" title="file.js">file.js</a>
-  //  Here we use the 'title' attribute to get the filename
-  return [...funIndexText.matchAll(/title="([^.]+)\.js"/g)]
-    .map(match => ({
-      path: `./functions/${match[1]}.js`,
-      name: match[1]
-    }));
+  const resp = await fetch('/modules');
+  return await resp.json();
 }
 
 
