@@ -35,7 +35,7 @@ function handleModulesRequest(_req, res, _pathname) {
       return error(res, 500, err);
     }
 
-    const jsFilenames = filenames
+    const moduleInfo = filenames
       .filter(name => name.endsWith('.js'))
       .map(name => ({
         path: `${FUNCTIONS_URL_PATH}/${name}`,
@@ -43,7 +43,7 @@ function handleModulesRequest(_req, res, _pathname) {
       }));
 
     res.setHeader('content-type', mimeType('json'));
-    res.end(JSON.stringify(jsFilenames));
+    res.end(JSON.stringify(moduleInfo));
   })
 }
 
