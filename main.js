@@ -1,14 +1,95 @@
-import * as functions from './functions.js';
 
-renderFunctionList(functions);
-addFunctionSelectEventListener(functions);
+getAvailableModules()
+  .then(moduleInfo => {
+    populateModuleSelect(moduleInfo);
+    addModuleSelectEventListener();
+  });
+
+
+async function getAvailableModules() {
+  // This whole thing relies on parsing the directory listing provided by `serve`
+  // It assumes all the function modules are in a directory called 'functions'
+  //  Do NOT put an  index.html' file in the 'functions' directory
+  //  If you do 'serve' will not serve up it's custom directory listing page.
+
+  const resp = await fetch('./functions');
+  const funIndexText = await resp.text();
+
+  // The directory listing provided by `serve` creates links to each file in the files
+  //  They look something like this: 
+  //   <a href="/functions/file.js" class="file js" title="file.js">file.js</a>
+  //  Here we use the 'title' attribute to get the filename
+  return [...funIndexText.matchAll(/title="([^.]+)\.js"/g)]
+    .map(match => ({
+      path: `./functions/${match[1]}.js`,
+      name: match[1]
+    }));
+}
+
+
+function populateModuleSelect(modules) {
+  const el = document.getElementById('function-list__header--select');
+  el.innerHTML += modules
+    .map(m => `<option value="${m.path}">${m.name}</option>`)
+    .join('');
+}
+
+
+function addModuleSelectEventListener() {
+  let functionSelectEventListener = null
+
+  const el = document.getElementById('function-list__header--select');
+  el.addEventListener('change', evt => {
+    removeFunctionSelectEventListener(functionSelectEventListener);
+    clearAllPanels();
+
+    if (!evt.target.value) {
+      return;
+    }
+
+    importFunctions(evt.target.value)
+      .then(functions => {
+        renderFunctionList(functions);
+        functionSelectEventListener = addFunctionSelectEventListener(functions);
+      });
+  });
+}
+
+
+async function importFunctions(path) {
+  // dynamically import the module
+  const module = await import(path);
+
+  // Remove anything that isn't a function
+  const functions = Object.entries(module)
+    .filter(([_, val]) => typeof val === 'function')
+    .reduce((funs, [key, val]) => {
+      funs[key] = val;
+      return funs;
+    }, {});
+
+  return functions;
+}
+
+
+function clearAllPanels() {
+  clearFunctionList();
+  clearFunctionDisplay();
+  clearFunctionRunner();
+  clearFunctionResult();
+}
+
+
+function clearFunctionList() {
+  const el = document.querySelector('#function-list__body');
+  el.innerHTML = '';
+}
 
 
 function renderFunctionList(functions) {
   const el = document.querySelector('#function-list__body');
   el.innerHTML =
     Object.values(functions)
-      .filter(prop => typeof prop === 'function')
       .sort((funA, funB) => funA.name < funB.name ? -1 : 1)
       .map(functionCard)
       .join('');
@@ -26,11 +107,18 @@ function functionCard(fun) {
 }
 
 
+function removeFunctionSelectEventListener(listener) {
+  if (listener) {
+    const el = document.querySelector('#function-list');
+    el.removeEventListener('click', listener);
+  }
+}
+
+
 function addFunctionSelectEventListener(functions) {
   let functionRunnerEventListener = null;
 
-  const el = document.querySelector('#function-list');
-  el.addEventListener('click', evt => {
+  function listener(evt) {
     const section = getNearestAncestorByTag(evt.target, 'section');
     if (!section) {
       return;
@@ -44,12 +132,22 @@ function addFunctionSelectEventListener(functions) {
 
     removeFunctionRunnerEventListener(functionRunnerEventListener);
     functionRunnerEventListener = addFunctionRunnerEventListener(selectedFunction);
-  });
+  }
+
+  const el = document.querySelector('#function-list');
+  el.addEventListener('click', listener);
+
+  return listener;
+}
+
+
+function clearFunctionDisplay() {
+  const el = document.querySelector('#function-display');
+  el.innerHTML = '';
 }
 
 
 function renderFunctionDisplay(fun) {
-  console.log(window.Prism);
   const el = document.querySelector('#function-display');
   el.innerHTML = `
     <h2>${fun.name}</h2>
@@ -60,6 +158,12 @@ ${window.Prism.highlight(fun.toString(), window.Prism.languages.javascript, 'jav
       </code>
     </pre>
   `;
+}
+
+
+function clearFunctionRunner() {
+  const el = document.querySelector('#function-runner__args');
+  el.innerHTML = '';
 }
 
 
@@ -116,7 +220,7 @@ function removeFunctionRunnerEventListener(listener) {
 
 function renderFunctionResult(result) {
   const el = document.querySelector('#function-runner__result');
-  el.innerHTML = typeof result !== 'string' 
+  el.innerHTML = typeof result !== 'string'
     ? JSON.stringify(result)
     : result;
 }

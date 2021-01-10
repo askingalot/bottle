@@ -15,6 +15,19 @@ h1 {
     margin: 0;
 }
 
+#function-list__header h1 {
+    display: flex;
+    justify-content: space-between;
+}
+
+#function-list__header--text {
+    margin-left: 16px;
+}
+#function-list__header--select {
+    margin-right: 16px;
+    padding: 0;
+}
+
 article {
     background-color: white;
     border: 1px solid gray;
