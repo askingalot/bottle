@@ -2,7 +2,7 @@
 getAvailableModules()
   .then(moduleInfo => {
     populateModuleSelect(moduleInfo);
-    addModuleSelectEventListener();
+    addModuleSelectListener();
   });
 
 
@@ -35,12 +35,12 @@ function populateModuleSelect(modules) {
 }
 
 
-function addModuleSelectEventListener() {
-  let functionSelectEventListener = null
+function addModuleSelectListener() {
+  let functionSelectListenerInfo = null
 
   const el = document.getElementById('function-list__header--select');
   el.addEventListener('change', evt => {
-    removeFunctionSelectEventListener(functionSelectEventListener);
+    removeListener(functionSelectListenerInfo);
     clearAllPanels();
 
     if (!evt.target.value) {
@@ -50,7 +50,7 @@ function addModuleSelectEventListener() {
     importFunctions(evt.target.value)
       .then(functions => {
         renderFunctionList(functions);
-        functionSelectEventListener = addFunctionSelectEventListener(functions);
+        functionSelectListenerInfo = addFunctionSelectListener(functions);
       });
   });
 }
@@ -71,19 +71,6 @@ async function importFunctions(path) {
   return functions;
 }
 
-
-function clearAllPanels() {
-  clearFunctionList();
-  clearFunctionDisplay();
-  clearFunctionRunner();
-  clearFunctionResult();
-}
-
-
-function clearFunctionList() {
-  const el = document.querySelector('#function-list__body');
-  el.innerHTML = '';
-}
 
 
 function renderFunctionList(functions) {
@@ -107,16 +94,8 @@ function functionCard(fun) {
 }
 
 
-function removeFunctionSelectEventListener(listener) {
-  if (listener) {
-    const el = document.querySelector('#function-list');
-    el.removeEventListener('click', listener);
-  }
-}
-
-
-function addFunctionSelectEventListener(functions) {
-  let functionRunnerEventListener = null;
+function addFunctionSelectListener(functions) {
+  let functionRunnerListenerInfo = null;
 
   function listener(evt) {
     const section = getNearestAncestorByTag(evt.target, 'section');
@@ -128,22 +107,18 @@ function addFunctionSelectEventListener(functions) {
 
     renderFunctionDisplay(selectedFunction);
     renderFunctionRunner(selectedFunction);
-    clearFunctionResult();
+    clearPanel('#function-runner__result');
 
-    removeFunctionRunnerEventListener(functionRunnerEventListener);
-    functionRunnerEventListener = addFunctionRunnerEventListener(selectedFunction);
+    removeListener(functionRunnerListenerInfo);
+    functionRunnerListenerInfo = addFunctionRunnerListener(selectedFunction);
   }
 
-  const el = document.querySelector('#function-list');
+  const selector = '#function-list';
+
+  const el = document.querySelector(selector);
   el.addEventListener('click', listener);
 
-  return listener;
-}
-
-
-function clearFunctionDisplay() {
-  const el = document.querySelector('#function-display');
-  el.innerHTML = '';
+  return { selector, listener, type: 'click' };
 }
 
 
@@ -158,12 +133,6 @@ ${window.Prism.highlight(fun.toString(), window.Prism.languages.javascript, 'jav
       </code>
     </pre>
   `;
-}
-
-
-function clearFunctionRunner() {
-  const el = document.querySelector('#function-runner__args');
-  el.innerHTML = '';
 }
 
 
@@ -190,7 +159,7 @@ function renderFunctionRunner(fun) {
 }
 
 
-function addFunctionRunnerEventListener(fun) {
+function addFunctionRunnerListener(fun) {
   function listener(evt) {
     if (evt.target.id !== 'run') {
       return;
@@ -205,10 +174,12 @@ function addFunctionRunnerEventListener(fun) {
     renderFunctionResult(result);
   }
 
-  const el = document.querySelector('#function-runner');
+  const selector = '#function-runner';
+
+  const el = document.querySelector(selector);
   el.addEventListener('click', listener);
 
-  return listener;
+  return { selector, listener, type: 'click' };
 }
 
 
@@ -226,8 +197,25 @@ function renderFunctionResult(result) {
 }
 
 
-function clearFunctionResult() {
-  const el = document.querySelector('#function-runner__result');
+function removeListener(listenerInfo) {
+  if (listenerInfo) {
+    const el = document.querySelector(listenerInfo.selector)
+    el.removeEventListener(listenerInfo.type, listenerInfo.listener);
+  }
+}
+
+
+function clearAllPanels() {
+  const panelSelectors =
+    ['#function-runner__result', '#function-runner__args',
+     '#function-display', '#function-list__body'];
+
+  panelSelectors.forEach(clearPanel);
+}
+
+
+function clearPanel(selector) {
+  const el = document.querySelector(selector);
   el.innerHTML = "";
 }
 
