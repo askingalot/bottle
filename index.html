@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/prismjs@1.14.0/themes/prism-tomorrow.min.css,npm/prismjs@1.14.0/themes/prism.min.css">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/combine/npm/prismjs@1.14.0/themes/prism-tomorrow.min.css,npm/prismjs@1.14.0/themes/prism.min.css">
   <link rel="stylesheet" href="styles.css">
   <title>Thor's Little Shoppe of Lightning Exercises</title>
 </head>
@@ -13,7 +14,14 @@
   <h1>Lightning Exercises</h1>
   <main>
     <article id="function-list" class="top-half left-side">
-      <h1 id="function_list__header">Available Functions</h1>
+      <div id="function-list__header">
+        <h1>
+          <span id="function-list__header--text">Available Functions</span>
+          <select id="function-list__header--select">
+            <option value="">Please Select a Module</option>
+          </select>
+        </h1>
+      </div>
       <div id="function-list__body"></div>
     </article>
 
@@ -26,7 +34,8 @@
     <article id="function-runner__result" class="bottom-half right-side"></article>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/combine/npm/prismjs@1.14.0,npm/prismjs@1.14.0/components/prism-javascript.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/combine/npm/prismjs@1.14.0,npm/prismjs@1.14.0/components/prism-javascript.min.js"></script>
   <script type="module" src="main.js"></script>
 </body>
 
