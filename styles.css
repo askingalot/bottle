@@ -23,7 +23,7 @@ h1 {
 #function-list__header--text {
     margin-left: 16px;
 }
-#function-list__header--select {
+#function-list__header--select-container {
     margin-right: 16px;
     padding: 0;
 }

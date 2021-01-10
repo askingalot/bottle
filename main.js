@@ -1,7 +1,7 @@
 
 getAvailableModules()
   .then(moduleInfo => {
-    populateModuleSelect(moduleInfo);
+    renderModuleSelect(moduleInfo);
     addModuleSelectListener();
   });
 
@@ -26,11 +26,15 @@ async function getAvailableModules() {
 }
 
 
-function populateModuleSelect(modules) {
-  const el = document.getElementById('function-list__header--select');
-  el.innerHTML += modules
-    .map(m => `<option value="${m.path}">${m.name}</option>`)
-    .join('');
+function renderModuleSelect(modules) {
+  const el = document.getElementById('function-list__header--select-container');
+  el.innerHTML = `
+  <select id="function-list__header--select">
+    <option value="">Please select a module</option>
+    ${modules
+      .map(m => `<option value="${m.path}">${m.name}</option>`)
+      .join('')}
+  </select>`;
 }
 
 
@@ -172,12 +176,6 @@ function addFunctionRunnerListener(fun) {
 }
 
 
-function removeFunctionRunnerEventListener(listener) {
-  const el = document.querySelector('#function-runner');
-  el.removeEventListener('click', listener);
-}
-
-
 function renderFunctionResult(result) {
   const el = document.querySelector('#function-runner__result');
   el.innerHTML = typeof result !== 'string'
@@ -195,9 +193,9 @@ function removeListener(listenerInfo) {
 
 
 function clearAllPanels() {
-  const panelSelectors =
-    ['#function-runner__result', '#function-runner__args',
-      '#function-display', '#function-list__body'];
+  const panelSelectors = [
+    '#function-runner__result', '#function-runner__args',
+    '#function-display', '#function-list__body'];
 
   panelSelectors.forEach(clearPanel);
 }
