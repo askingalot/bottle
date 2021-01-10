@@ -11,7 +11,6 @@ async function getAvailableModules() {
   // It assumes all the function modules are in a directory called 'functions'
   //  Do NOT put an  index.html' file in the 'functions' directory
   //  If you do 'serve' will not serve up it's custom directory listing page.
-
   const resp = await fetch('./functions');
   const funIndexText = await resp.text();
 
@@ -60,26 +59,16 @@ async function importFunctions(path) {
   // dynamically import the module
   const module = await import(path);
 
-  // Remove anything that isn't a function
-  const functions = Object.entries(module)
-    .filter(([_, val]) => typeof val === 'function')
-    .reduce((funs, [key, val]) => {
-      funs[key] = val;
-      return funs;
-    }, {});
-
-  return functions;
+  // Remove anything that isn't a function and sort alphabetically
+  return Object.values(module)
+    .filter(val => typeof val === 'function')
+    .sort((funA, funB) => funA.name < funB.name ? -1 : 1)
 }
-
 
 
 function renderFunctionList(functions) {
   const el = document.querySelector('#function-list__body');
-  el.innerHTML =
-    Object.values(functions)
-      .sort((funA, funB) => funA.name < funB.name ? -1 : 1)
-      .map(functionCard)
-      .join('');
+  el.innerHTML = functions.map(functionCard).join('');
 }
 
 
@@ -103,7 +92,7 @@ function addFunctionSelectListener(functions) {
       return;
     }
 
-    const selectedFunction = functions[section.id];
+    const selectedFunction = functions.find(f => f.name === section.id);
 
     renderFunctionDisplay(selectedFunction);
     renderFunctionRunner(selectedFunction);
@@ -208,7 +197,7 @@ function removeListener(listenerInfo) {
 function clearAllPanels() {
   const panelSelectors =
     ['#function-runner__result', '#function-runner__args',
-     '#function-display', '#function-list__body'];
+      '#function-display', '#function-list__body'];
 
   panelSelectors.forEach(clearPanel);
 }
