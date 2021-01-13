@@ -4,9 +4,12 @@ import fs from 'fs';
 import path from 'path';
 
 const PORT = 3001;
-const STATIC_FILE_PATH = '.';
+
+const STATIC_FILE_PATH = './';
 const FUNCTIONS_FILE_PATH = path.join(STATIC_FILE_PATH, 'functions');
+const TEST_IMPORT_PATH = path.join('..', '..', 'tests');
 const FUNCTIONS_URL_PATH = '/functions';
+
 
 const server = http.createServer((req, res) => {
   // extract URL path - Avoid https://en.wikipedia.org/wiki/Directory_traversal_attack
@@ -16,13 +19,14 @@ const server = http.createServer((req, res) => {
   handler(sanitizePath)(req, res, sanitizePath);
 });
 
-server.listen( PORT, () => console.log(`http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`http://localhost:${PORT}`));
 
 
 
 function handler(path) {
   const handlerMap = {
     '/modules': handleModulesRequest,
+    '/test': handleTestRequest,
   };
 
   return handlerMap[path] ?? handleStatic;
@@ -32,7 +36,7 @@ function handler(path) {
 function handleModulesRequest(_req, res, _pathname) {
   fs.readdir(FUNCTIONS_FILE_PATH, (err, filenames) => {
     if (err) {
-      return error(res, 500, err);
+      return htmlError(res, 500, err);
     }
 
     const moduleInfo = filenames
@@ -48,12 +52,30 @@ function handleModulesRequest(_req, res, _pathname) {
 }
 
 
+function handleTestRequest(req, res, _pathname) {
+  let strTestInfo = '';
+  req.on('data', chunk => strTestInfo += chunk);
+  req.on('end', async () => {
+    try {
+      const testInfo = JSON.parse(strTestInfo);
+
+      const result = await runTestFunction(testInfo)
+
+      res.setHeader('Content-Type', mimeType('json'));
+      res.end(JSON.stringify(result));
+    } catch (err) {
+      return jsonError(res, "Failed to run test. Error: " + err.message, err);
+    }
+  });
+}
+
+
 function handleStatic(_req, res, pathname) {
   pathname = path.join(STATIC_FILE_PATH, pathname);
 
   fs.stat(pathname, (err, stats) => {
     if (err || !(stats.isFile() || stats.isDirectory())) {
-      return error(res, 404);
+      return htmlError(res, 404);
     }
 
     if (stats.isDirectory()) {
@@ -62,7 +84,7 @@ function handleStatic(_req, res, pathname) {
 
     fs.readFile(pathname, function (err, data) {
       if (err) {
-        return error(res, 500, err);
+        return htmlError(res, 500, err);
       }
 
       const ext = path.parse(pathname).ext;
@@ -70,6 +92,13 @@ function handleStatic(_req, res, pathname) {
       res.end(data);
     });
   });
+}
+
+
+async function runTestFunction(testInfo) {
+  const modulePath = `${TEST_IMPORT_PATH}/${testInfo.module}.js`;
+  const mod = await import(modulePath)
+  return mod[testInfo.function](...testInfo.args);
 }
 
 
@@ -93,7 +122,19 @@ function mimeType(extention) {
 }
 
 
-function error(res, code, err) {
+function jsonError(res, message, err) {
+  if (err) {
+    console.error(message);
+    console.error(err);
+  }
+
+  res.statusCode = 500;
+  res.setHeader('Content-Type', mimeType('json'));
+  res.end(`{ "error": "${message}" }`);
+}
+
+
+function htmlError(res, code, err) {
   if (err) {
     console.error(err);
   }

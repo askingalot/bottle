@@ -16,7 +16,7 @@ export function howDoesJavaScriptFeel() {
 // Return a greeting to the person named in the function's argument
 // Example result: "Hello, Joan!"
 export function greet(name) {
-
+  return { foo: "bar" }
 }
 
 
