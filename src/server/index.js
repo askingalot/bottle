@@ -6,9 +6,9 @@ import path from 'path';
 const PORT = 3001;
 
 const STATIC_FILE_PATH = './';
-const FUNCTIONS_FILE_PATH = path.join(STATIC_FILE_PATH, 'functions');
-const TEST_IMPORT_PATH = path.join('..', '..', 'tests');
-const FUNCTIONS_URL_PATH = '/functions';
+const EXERCISES_FILE_PATH = path.join(STATIC_FILE_PATH, 'exercises');
+const TEST_IMPORT_PATH = path.join('..', '..', 'exercise_tests');
+const EXERCISES_URL_PATH = '/exercises';
 
 
 const server = http.createServer((req, res) => {
@@ -34,7 +34,7 @@ function handler(path) {
 
 
 function handleModulesRequest(_req, res, _pathname) {
-  fs.readdir(FUNCTIONS_FILE_PATH, (err, filenames) => {
+  fs.readdir(EXERCISES_FILE_PATH, (err, filenames) => {
     if (err) {
       return htmlError(res, 500, err);
     }
@@ -42,7 +42,7 @@ function handleModulesRequest(_req, res, _pathname) {
     const moduleInfo = filenames
       .filter(name => name.endsWith('.js'))
       .map(name => ({
-        path: `${FUNCTIONS_URL_PATH}/${name}`,
+        path: `${EXERCISES_URL_PATH}/${name}`,
         name: name.substring(0, name.length - 3)
       }));
 
