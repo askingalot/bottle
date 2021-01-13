@@ -33,7 +33,6 @@ article {
     border: 1px solid gray;
     padding: 16px 16px 16px 16px;
     display: inline-block;
-    /* width: 46%; */
     min-width: 300px;
     position: absolute;
     overflow-y: auto;
@@ -82,4 +81,26 @@ article {
 
 #function-runner__args textarea {
     font-size: 1.3em;
+}
+
+#function-result {
+    padding: 0;
+}
+
+#function-result__container {
+    padding: 16px 16px 16px 16px;
+    width: calc(100% - 64px);
+    height: calc(100% - 64px);
+}
+
+#function-result__container.success {
+    border: 16px solid lightgreen;
+}
+
+#function-result__container.fail {
+    border: 16px double red;
+}
+
+#function-result__result {
+    height: 50%;
 }

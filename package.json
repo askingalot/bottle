@@ -1,0 +1,9 @@
+{
+  "name": "thor",
+  "version": "1.0.0",
+  "description": "A tool for javascript lightning exercises\"",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/server/index.js"
+  }
+}

@@ -1,44 +1,30 @@
 
 getAvailableModules()
-  .then(moduleInfo => {
-    renderModuleSelect(moduleInfo);
-    addModuleSelectListener();
+  .then(modulesInfo => {
+    renderModuleSelect(modulesInfo);
+    addModuleSelectListener(modulesInfo);
   });
 
 
 async function getAvailableModules() {
-  // This whole thing relies on parsing the directory listing provided by `serve`
-  // It assumes all the function modules are in a directory called 'functions'
-  //  Do NOT put an  index.html' file in the 'functions' directory
-  //  If you do 'serve' will not serve up it's custom directory listing page.
-  const resp = await fetch('./functions');
-  const funIndexText = await resp.text();
-
-  // The directory listing provided by `serve` creates links to each file in the files
-  //  They look something like this: 
-  //   <a href="/functions/file.js" class="file js" title="file.js">file.js</a>
-  //  Here we use the 'title' attribute to get the filename
-  return [...funIndexText.matchAll(/title="([^.]+)\.js"/g)]
-    .map(match => ({
-      path: `./functions/${match[1]}.js`,
-      name: match[1]
-    }));
+  const resp = await fetch('/modules');
+  return await resp.json();
 }
 
 
-function renderModuleSelect(modules) {
+function renderModuleSelect(modulesInfo) {
   const el = document.getElementById('function-list__header--select-container');
   el.innerHTML = `
   <select id="function-list__header--select">
     <option value="">Please select a module</option>
-    ${modules
+    ${modulesInfo
       .map(m => `<option value="${m.path}">${m.name}</option>`)
       .join('')}
   </select>`;
 }
 
 
-function addModuleSelectListener() {
+function addModuleSelectListener(modulesInfo) {
   let functionSelectListenerInfo = null
 
   const el = document.getElementById('function-list__header--select');
@@ -50,29 +36,37 @@ function addModuleSelectListener() {
       return;
     }
 
-    importFunctions(evt.target.value)
-      .then(functions => {
-        renderFunctionList(functions);
-        functionSelectListenerInfo = addFunctionSelectListener(functions);
+    const selectedModule = modulesInfo.find(mi => mi.path === evt.target.value);
+
+    importFunctions(selectedModule)
+      .then(functionInfos => {
+        renderFunctionList(functionInfos);
+        functionSelectListenerInfo = addFunctionSelectListener(functionInfos);
       });
   });
 }
 
 
-async function importFunctions(path) {
+async function importFunctions(moduleInfo) {
   // dynamically import the module
-  const module = await import(path);
+  const module = await import(moduleInfo.path);
 
   // Remove anything that isn't a function and sort alphabetically
   return Object.values(module)
     .filter(val => typeof val === 'function')
     .sort((funA, funB) => funA.name < funB.name ? -1 : 1)
+    .map(fun => ({
+      moduleName: moduleInfo.name,
+      function: fun
+    }));
 }
 
 
-function renderFunctionList(functions) {
+function renderFunctionList(functionInfos) {
   const el = document.querySelector('#function-list__body');
-  el.innerHTML = functions.map(functionCard).join('');
+  el.innerHTML = functionInfos
+    .map(fi => functionCard(fi.function))
+    .join('');
 }
 
 
@@ -87,7 +81,7 @@ function functionCard(fun) {
 }
 
 
-function addFunctionSelectListener(functions) {
+function addFunctionSelectListener(functionInfos) {
   let functionRunnerListenerInfo = null;
 
   function listener(evt) {
@@ -96,14 +90,15 @@ function addFunctionSelectListener(functions) {
       return;
     }
 
-    const selectedFunction = functions.find(f => f.name === section.id);
+    const selectedFunctionInfo =
+      functionInfos.find(fi => fi.function.name === section.id);
 
-    renderFunctionDisplay(selectedFunction);
-    renderFunctionRunner(selectedFunction);
-    clearPanel('#function-runner__result');
+    renderFunctionDisplay(selectedFunctionInfo.function);
+    renderFunctionRunner(selectedFunctionInfo.function);
+    clearPanel('#function-result');
 
     removeListener(functionRunnerListenerInfo);
-    functionRunnerListenerInfo = addFunctionRunnerListener(selectedFunction);
+    functionRunnerListenerInfo = addFunctionRunnerListener(selectedFunctionInfo);
   }
 
   const selector = '#function-list';
@@ -152,8 +147,8 @@ function renderFunctionRunner(fun) {
 }
 
 
-function addFunctionRunnerListener(fun) {
-  function listener(evt) {
+function addFunctionRunnerListener(functionInfo) {
+  async function listener(evt) {
     if (evt.target.id !== 'run') {
       return;
     }
@@ -163,8 +158,9 @@ function addFunctionRunnerListener(fun) {
       .map(input => input.value)
       .map(parseArg);
 
-    const result = fun(...args);
-    renderFunctionResult(result);
+    const result = functionInfo.function(...args);
+    const testResult = await runTest(functionInfo.moduleName, functionInfo.function.name, args);
+    renderResults(result, testResult);
   }
 
   const selector = '#function-runner';
@@ -176,11 +172,54 @@ function addFunctionRunnerListener(fun) {
 }
 
 
-function renderFunctionResult(result) {
-  const el = document.querySelector('#function-runner__result');
-  el.innerHTML = typeof result !== 'string'
-    ? JSON.stringify(result)
-    : result;
+function renderResults(result, testResult) {
+  const containerClass = checkTest(result, testResult) ? 'success' : 'fail';
+  const el = document.querySelector('#function-result');
+  el.innerHTML = `
+    <section id="function-result__container" class="${containerClass}">
+      <div id="function-result__result"> 
+        ${printableResult(result)} 
+      </div>
+      <div id="function-result__test-result"> 
+        ${printableResult(testResult)}
+      </div>
+    </section>`;
+}
+
+
+function checkTest(result, testResult) {
+  return JSON.stringify(result) === JSON.stringify(testResult);
+}
+
+
+function printableResult(result) {
+  if (typeof result === 'string') {
+    if (result.trim() === '') {
+      return '<i>--- Result contains only whitespace ---</i>';
+    }
+    return result;
+  }
+
+  return JSON.stringify(result);
+}
+
+
+async function runTest(modName, funName, args) {
+  const functionCallInfo = {
+    module: modName,
+    function: funName,
+    args: args
+  };
+
+  const res = await fetch('/test', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(functionCallInfo)
+  });
+
+  return await res.json();
 }
 
 
@@ -194,7 +233,7 @@ function removeListener(listenerInfo) {
 
 function clearAllPanels() {
   const panelSelectors = [
-    '#function-runner__result', '#function-runner__args',
+    '#function-result', '#function-runner__args',
     '#function-display', '#function-list__body'];
 
   panelSelectors.forEach(clearPanel);
